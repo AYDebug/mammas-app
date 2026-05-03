@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Mamma's lucky spin 💖</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#ff69b4">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #fff0f5;
+    text-align: center;
+  }
+
+  h1 {
+    margin-top: 30px;
+  }
+
+  #container {
+    margin: 40px auto;
+    width: 300px;
+    height: 120px;
+    overflow: hidden;
+    border: 5px solid #ff69b4;
+    border-radius: 15px;
+    background: white;
+    position: relative;
+  }
+
+  #list {
+    position: absolute;
+    width: 100%;
+  }
+
+  .item {
+    height: 40px;
+    line-height: 40px;
+    font-size: 18px;
+  }
+
+  #highlight {
+    position: absolute;
+    top: 40px;
+    width: 100%;
+    height: 40px;
+    border-top: 2px solid red;
+    border-bottom: 2px solid red;
+    pointer-events: none;
+  }
+
+  button {
+    padding: 12px 25px;
+    font-size: 18px;
+    background: #ff69b4;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+
+  #result {
+    margin-top: 20px;
+    font-size: 20px;
+    font-weight: bold;
+  }
+</style>
+</head>
+
+<body>
+
+<h1>Pick a Surprise 💝</h1>
+
+<div id="container">
+  <div id="list"></div>
+  <div id="highlight"></div>
+</div>
+
+<button onclick="start()">Pick 🎰</button>
+
+<div id="result"></div>
+
+<script>
+const options = [
+  "Do the dishes 🍽️",
+  "Big hug 🤗",
+  "Clean the kitchen 🧼",
+  "Make tea ☕",
+  "Sweet note 💌",
+  "Help with chores 🧹",
+  "Movie night 🎬",
+  "Number of kisses 💖"
+  "Belly Button 🤮"
+  "Squeeze 🧽"
+
+];
+
+const list = document.getElementById("list");
+const itemHeight = 40; // Defined once at the top for easy access
+
+// Duplicate list for smooth scrolling
+const fullList = [...options, ...options, ...options];
+
+fullList.forEach(text => {
+  const div = document.createElement("div");
+  div.className = "item";
+  div.innerText = text;
+  list.appendChild(div);
+});
+
+let position = 0;
+let speed = 20;
+let spinning = false;
+
+const tickSound = new Audio("https://actions.google.com/sounds/v1/alarms/beep_short.ogg");
+const winSound = new Audio("https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg");
+
+function start() {
+  if (spinning) return;
+  spinning = true;
+  document.getElementById("result").innerText = ""; // Clear previous result
+
+  speed = 25;
+  let duration = 2000 + Math.random() * 2000; 
+  let startTime = Date.now();
+
+  function animate() {
+    position += speed;
+
+    const totalHeight = options.length * itemHeight;
+
+    if (position >= totalHeight) {
+      position = position % totalHeight;
+    }
+
+    list.style.transform = `translateY(-${position}px)`;
+
+    if (Math.random() < 0.2) {
+      tickSound.currentTime = 0;
+      tickSound.play().catch(() => {}); // Catch prevents errors if sound hasn't loaded
+    }
+
+    let elapsed = Date.now() - startTime;
+    if (elapsed > duration) {
+      speed *= 0.95;
+    }
+
+    if (speed > 0.5) {
+      requestAnimationFrame(animate);
+    } else {
+      finish();
+    }
+  }
+
+  animate();
+}
+
+function finish() {
+  // Logic to find which item is in the red "highlight" box
+  // The highlight box is 40px from the top (the 2nd slot)
+  const centerOffset = itemHeight; 
+  const adjustedPosition = position + centerOffset;
+  const index = Math.floor(adjustedPosition / itemHeight) % options.length;
+
+  const choice = options[index];
+  document.getElementById("result").innerText = "You got: " + choice;
+
+  winSound.play().catch(() => {});
+  spinning = false;
+
+  // Snap position so the item is perfectly centered in the red box
+  position = Math.round(position / itemHeight) * itemHeight;
+  list.style.transform = `translateY(-${position}px)`;
+}
+</script>
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js');
+  }
+</script>
+</body>
+</html>

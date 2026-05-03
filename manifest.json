@@ -1,0 +1,20 @@
+{
+  "name": "Mamma's Surprise Picker",
+  "short_name": "Mamma 💖",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#fff0f5",
+  "theme_color": "#ff69b4",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
