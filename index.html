@@ -2,12 +2,44 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<div class="bg-layer">
+  <img src="mammanienie1.jpg" class="bg-img pos1">
+  <img src="mammanienie2.jpg" class="bg-img pos2">
+  <img src="mammanienie3.jpg" class="bg-img pos3">
+  <img src="mammanienie4.jpg" class="bg-img pos4">
+  <img src="mammanienie5.jpg" class="bg-img pos5">
+</div>
 <title>Mamma's lucky spin 💖</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#ff69b4">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <style>
-  /* This centers everything perfectly in the middle of the screen */
+  
+  
+  .bg-layer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1; 
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .bg-img {
+    position: absolute;
+    width: 80px;      /* Adjust size as needed */
+    opacity: 0.15;    /* This is the key! Keeps them from being distracting */
+    filter: blur(1px); /* Optional: softens the edges */
+  }
+
+  /* Scattered Positions */
+  .pos1 { top: 5%;  left: 5%;  transform: rotate(-15deg); }
+  .pos2 { top: 15%; right: 10%; transform: rotate(20deg); }
+  .pos3 { bottom: 20%; left: 8%; transform: rotate(10deg); }
+  .pos4 { bottom: 10%; right: 5%; transform: rotate(-25deg); }
+  .pos5 { top: 50%; left: 50%; transform: translate(-50%, -50%) scale(2); opacity: 0.05; }
   html, body {
     height: 100%;
     margin: 0;
