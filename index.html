@@ -170,22 +170,21 @@ function start() {
 }
 
 function finish() {
-  
-  
-  winSound.currentTime = 0;
-  winSound.volume = 1.0; 
-  winSound.play().catch(() => {});
+  position = Math.round(position / itemHeight) * itemHeight;
+  list.style.transform = `translateY(-${position}px)`;
 
-  const centerOffset = itemHeight; 
-  const adjustedPosition = position + centerOffset;
-  const index = Math.floor(adjustedPosition / itemHeight) % options.length;
+  const redBoxOffset = itemHeight; 
+  const winningPosition = position + redBoxOffset;
+ 
+  const index = Math.round(winningPosition / itemHeight) % options.length;
 
   const choice = options[index];
   document.getElementById("result").innerText = "You got: " + choice;
-
+  
+  winSound.currentTime = 0;
+  winSound.play().catch(() => {});
+  
   spinning = false;
-  position = Math.round(position / itemHeight) * itemHeight;
-  list.style.transform = `translateY(-${position}px)`;
 }
 </script>
 <script>
