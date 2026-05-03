@@ -96,15 +96,12 @@ const options = [
   "Number of kisses 💖",
   "Belly Button 🤮",
   "Squeeze 🧽"
-
 ];
 
 const list = document.getElementById("list");
-const itemHeight = 50; // Defined once at the top for easy access
+const itemHeight = 50; 
 
-// Duplicate list for smooth scrolling
 const fullList = [...options, ...options, ...options];
-
 fullList.forEach(text => {
   const div = document.createElement("div");
   div.className = "item";
@@ -116,21 +113,29 @@ let position = 0;
 let speed = 20;
 let spinning = false;
 
-const tickSound = new Audio("https://www.soundjay.com/buttons/button-50.mp3");
+// --- AUDIO SETUP ---
+const tickSound = new Audio("https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3");
 const customMusic = new Audio("audioformamma.mp3");
-const winSound = new Audio("https://www.soundjay.com/misc/sounds/confetti-cannon-1.mp3");
-customMusic.preload = 'auto';
-winSound.preload = 'auto';
+const winSound = new Audio("https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3");
 
-tickSound.volume = 0.4;
+// PRELOAD & VOLUME TUNING
+customMusic.preload = 'auto';
+customMusic.loop = true; // Keeps music going if it's short
+customMusic.volume = 0.4; // Lowered so other sounds pop through
+
+tickSound.preload = 'auto';
+tickSound.volume = 1.0; // Max volume for the tick
+
+winSound.preload = 'auto';
+winSound.volume = 1.0; // Max volume for the celebration
 
 function start() {
   if (spinning) return;
   spinning = true;
-  document.getElementById("result").innerText = ""; // Clear previous result
+  document.getElementById("result").innerText = ""; 
 
-  customMusic.currentTime = 0;
-  customMusic.play().catch(() => {});
+  // Start music if it's not already playing
+  customMusic.play().catch(e => console.log("Music play blocked:", e));
 
   speed = 25;
   let duration = 2000 + Math.random() * 2000; 
@@ -138,7 +143,6 @@ function start() {
 
   function animate() {
     position += speed;
-
     const totalHeight = options.length * itemHeight;
 
     if (position >= totalHeight) {
@@ -147,9 +151,11 @@ function start() {
 
     list.style.transform = `translateY(-${position}px)`;
 
+    // Play tick sound logic
     if (Math.random() < 0.2) {
-      tickSound.currentTime = 0;
-      tickSound.play().catch(() => {}); // Catch prevents errors if sound hasn't loaded
+      const t = tickSound.cloneNode(); // Allows overlapping ticks
+      t.volume = 0.6;
+      t.play().catch(() => {}); 
     }
 
     let elapsed = Date.now() - startTime;
@@ -168,23 +174,21 @@ function start() {
 }
 
 function finish() {
-  // Logic to find which item is in the red "highlight" box
-  // The highlight box is 40px from the top (the 2nd slot)
+  // customMusic.pause(); // REMOVED so music keeps playing
+  
+  // Play the celebration pop!
+  winSound.currentTime = 0;
+  winSound.play().catch(e => console.log("Win sound blocked:", e));
+
   const centerOffset = itemHeight; 
   const adjustedPosition = position + centerOffset;
   const index = Math.floor(adjustedPosition / itemHeight) % options.length;
 
-  customMusic.pause();
-  winSound.currentTime = 0;
-  winSound.play().catch(() => {});
-  
   const choice = options[index];
   document.getElementById("result").innerText = "You got: " + choice;
 
-  winSound.play().catch(() => {});
   spinning = false;
 
-  // Snap position so the item is perfectly centered in the red box
   position = Math.round(position / itemHeight) * itemHeight;
   list.style.transform = `translateY(-${position}px)`;
 }
