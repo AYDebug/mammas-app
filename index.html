@@ -75,7 +75,7 @@
 
   #result {
     margin-top: 25px;
-    min-height: 30px; /* Keeps layout stable when text appears */
+    min-height: 30px; 
     font-size: 24px;
     font-weight: bold;
     color: #ff1493;
@@ -125,7 +125,7 @@ const winSound = new Audio("https://assets.mixkit.co/active_storage/sfx/2013/201
 
 customMusic.preload = 'auto';
 customMusic.loop = true; 
-customMusic.volume = 0.4; // Lowered background music to hear effects
+customMusic.volume = 0.4; 
 
 function start() {
   if (spinning) return;
@@ -150,7 +150,7 @@ function start() {
 
     if (Math.random() < 0.25) {
       const t = tickSound.cloneNode();
-      t.volume = 0.7; // Loud ticks
+      t.volume = 1.0; 
       t.play().catch(() => {}); 
     }
 
@@ -170,10 +170,10 @@ function start() {
 }
 
 function finish() {
-  // customMusic.pause(); // Music stays playing!
+  
   
   winSound.currentTime = 0;
-  winSound.volume = 1.0; // Max celebration volume
+  winSound.volume = 1.0; 
   winSound.play().catch(() => {});
 
   const centerOffset = itemHeight; 
