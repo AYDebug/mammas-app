@@ -116,13 +116,21 @@ let position = 0;
 let speed = 20;
 let spinning = false;
 
-const tickSound = new Audio("https://actions.google.com/sounds/v1/alarms/beep_short.ogg");
-const winSound = new Audio("https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg");
+const tickSound = new Audio("https://www.soundjay.com/buttons/button-50.mp3");
+const customMusic = new Audio("audioformamma.mp3");
+const winSound = new Audio("https://www.soundjay.com/misc/sounds/confetti-cannon-1.mp3");
+customMusic.preload = 'auto';
+winSound.preload = 'auto';
+
+tickSound.volume = 0.4;
 
 function start() {
   if (spinning) return;
   spinning = true;
   document.getElementById("result").innerText = ""; // Clear previous result
+
+  customMusic.currentTime = 0;
+  customMusic.play().catch(() => {});
 
   speed = 25;
   let duration = 2000 + Math.random() * 2000; 
@@ -166,6 +174,10 @@ function finish() {
   const adjustedPosition = position + centerOffset;
   const index = Math.floor(adjustedPosition / itemHeight) % options.length;
 
+  customMusic.pause();
+  winSound.currentTime = 0;
+  winSound.play().catch(() => {});
+  
   const choice = options[index];
   document.getElementById("result").innerText = "You got: " + choice;
 
