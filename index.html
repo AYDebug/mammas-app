@@ -12,12 +12,11 @@
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
     <style>
-        /* Centering & Background */
         html, body {
             height: 100%;
             margin: 0;
             padding: 0;
-            overflow: hidden; /* Prevents accidental scrolling */
+            overflow: hidden;
         }
 
         body {
@@ -30,7 +29,6 @@
             text-align: center;
         }
 
-        /* Decorative Background Images */
         .bg-layer {
             position: fixed;
             top: 0;
@@ -58,10 +56,8 @@
             font-family: 'Pacifico', cursive;
             color: #ff1493;
             margin: 0 0 20px 0;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.05);
         }
 
-        /* The Spin Wheel */
         #container {
             width: 85%;
             max-width: 400px;  
@@ -77,7 +73,7 @@
         #list {
             position: absolute;
             width: 100%;
-            transition: transform 0.1s linear;
+            /* Removed the CSS transition to let JavaScript handle the smoothness */
         }
 
         .item {
@@ -89,7 +85,7 @@
 
         #highlight {
             position: absolute;
-            top: 50px; /* Centered in the 150px height box */
+            top: 50px; 
             width: 100%;
             height: 50px;
             border-top: 3px solid #ff1493;
@@ -109,11 +105,7 @@
             border-radius: 50px;
             cursor: pointer;
             margin-top: 30px;
-            box-shadow: 0 5px 15px rgba(255, 105, 180, 0.4);
-            transition: transform 0.1s;
         }
-
-        button:active { transform: scale(0.95); }
 
         #result {
             margin-top: 25px;
@@ -123,7 +115,6 @@
             color: #ff1493;
         }
 
-        /* WhatsApp Button */
         #whatsapp-btn {
             display: none;
             margin-top: 20px;
@@ -133,12 +124,7 @@
             border-radius: 30px;
             text-decoration: none;
             font-weight: bold;
-            font-size: 18px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            animation: fadeIn 0.5s;
         }
-
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
 
@@ -152,6 +138,18 @@
     <img src="mammanienie5.jpg" class="bg-img pos5" onerror="this.style.display='none'">
 </div>
 
+<h1>Pick a Surprise 💝</h1>
+
+<div id="container">
+    <div id="list"></div>
+    <div id="highlight"></div>
+</div>
+
+<button onclick="start()">Pick 🎰</button>
+
+<div id="result"></div>
+<a href="#" id="whatsapp-btn">Redeem Prize 📱</a>
+
 <script>
 const options = [
     "Do the dishes 🍽️", "Big hug 🤗", "Clean the kitchen 🧼", 
@@ -162,8 +160,8 @@ const options = [
 const list = document.getElementById("list");
 const itemHeight = 50; 
 
-// We use a larger multiplier for the list to ensure we never "run out" of items during a fast spin
-const fullList = [...options, ...options, ...options, ...options, ...options, ...options];
+// More duplicates for a longer, smoother spin
+const fullList = [...options, ...options, ...options, ...options, ...options, ...options, ...options, ...options];
 
 fullList.forEach(text => {
     const div = document.createElement("div");
@@ -175,7 +173,6 @@ fullList.forEach(text => {
 let position = 0;
 let spinning = false;
 
-// Audio Setup
 const tickSoundURL = "https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3";
 const customMusic = new Audio("audioformamma.mp3");
 const winSound = new Audio("https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3");
@@ -195,28 +192,25 @@ function playTick() {
 function start() {
     if (spinning) return;
     spinning = true;
-    
     document.getElementById("result").innerText = "";
     document.getElementById("whatsapp-btn").style.display = "none";
-    
     customMusic.play().catch(() => {});
 
-    // --- SMOOTH SPIN LOGIC ---
-    let speed = 30 + Math.random() * 15; // Higher initial burst
-    const friction = 0.985; // How fast it slows down (0.99 = slow stop, 0.95 = fast stop)
-    const minSpeed = 0.2;
+    // SMOOTH VELOCITY LOGIC
+    let speed = 35 + Math.random() * 15; 
+    const friction = 0.988; 
+    const minSpeed = 0.15;
 
     function step() {
         position += speed;
-        speed *= friction; // Gradual deceleration
+        speed *= friction;
 
         const totalHeight = options.length * itemHeight;
         if (position >= totalHeight) position %= totalHeight;
 
-        // Visual update using translate3d for Hardware Acceleration (Smoother!)
+        // Uses GPU acceleration for ultra-smooth movement
         list.style.transform = `translate3d(0, -${position}px, 0)`;
 
-        // Tick sound logic
         if (Math.floor(position / itemHeight) !== Math.floor((position - speed) / itemHeight)) {
             playTick();
         }
@@ -227,16 +221,13 @@ function start() {
             finish();
         }
     }
-    
     requestAnimationFrame(step);
 }
 
 function finish() {
-    // Snap to center
     position = Math.round(position / itemHeight) * itemHeight;
     list.style.transform = `translate3d(0, -${position}px, 0)`;
 
-    // Calculate index based on the center highlight box
     const index = (Math.round((position + itemHeight) / itemHeight)) % options.length;
     const choice = options[index];
 
@@ -250,18 +241,17 @@ function finish() {
     waBtn.style.display = "inline-block";
     waBtn.onclick = (e) => {
         e.preventDefault();
-        const myNumber = "YOUR_NUMBER"; // Replace with your number!
+        const myNumber = "YOUR_PHONE_NUMBER_HERE"; 
         const msg = encodeURIComponent(`Hi! I won: ${choice}! 💖`);
         window.open(`https://wa.me/${myNumber}?text=${msg}`, '_blank');
     };
-
     spinning = false;
 }
-    if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('sw.js')
-      .then(() => console.log("Service Worker Registered"))
-      .catch(err => console.log("Service Worker Failed", err));
-  }
+
+// SERVICE WORKER FIXED
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js');
+}
 </script>
 </body>
 </html>
