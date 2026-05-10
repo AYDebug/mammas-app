@@ -1,228 +1,277 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<div class="bg-layer">
-  <img src="mammanienie1.jpg" class="bg-img pos1">
-  <img src="mammanienie2.jpg" class="bg-img pos2">
-  <img src="mammanienie3.jpg" class="bg-img pos3">
-  <img src="mammanienie4.jpg" class="bg-img pos4">
-  <img src="mammanienie5.jpg" class="bg-img pos5">
-</div>
-<title>Mamma's lucky spin 💖</title>
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#ff69b4">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<style>
-  
-  
-  .bg-layer {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: -1; 
-    overflow: hidden;
-    pointer-events: none;
-  }
+    <meta charset="UTF-8">
+    <title>Mamma's lucky spin 💖</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#ff69b4">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
 
-  .bg-img {
-    position: absolute;
-    width: 80px;      /* Adjust size as needed */
-    opacity: 0.15;    /* This is the key! Keeps them from being distracting */
-    filter: blur(1px); /* Optional: softens the edges */
-  }
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Quicksand:wght@500&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
-  /* Scattered Positions */
-  .pos1 { top: 5%;  left: 5%;  transform: rotate(-15deg); }
-  .pos2 { top: 15%; right: 10%; transform: rotate(20deg); }
-  .pos3 { bottom: 20%; left: 8%; transform: rotate(10deg); }
-  .pos4 { bottom: 10%; right: 5%; transform: rotate(-25deg); }
-  .pos5 { top: 50%; left: 50%; transform: translate(-50%, -50%) scale(2); opacity: 0.05; }
-  html, body {
-    height: 100%;
-    margin: 0;
-    padding: 0;
-  }
+    <style>
+        /* Centering & Background */
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden; /* Prevents accidental scrolling */
+        }
 
-  body {
-    font-family: Arial, sans-serif;
-    background: #fff0f5;
-    display: flex;
-    flex-direction: column;
-    justify-content: center; /* Vertical centering */
-    align-items: center;     /* Horizontal centering */
-    text-align: center;
-  }
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background: #fff0f5;
+            display: flex;
+            flex-direction: column;
+            justify-content: center; 
+            align-items: center;  
+            text-align: center;
+        }
 
-  h1 {
-    margin: 0 0 20px 0; /* Space below the title */
-  }
+        /* Decorative Background Images */
+        .bg-layer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1; 
+            pointer-events: none;
+        }
 
-  #container {
-    width: 90%;
-    max-width: 500px;  
-    height: 150px; 
-    overflow: hidden;
-    border: 8px solid #ff69b4;
-    border-radius: 20px;
-    background: white;
-    position: relative;
-    box-shadow: 0 10px 20px rgba(255, 105, 180, 0.2);
-  }
+        .bg-img {
+            position: absolute;
+            width: 70px;      
+            opacity: 0.25;    
+            filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.05));
+        }
 
-  #list {
-    position: absolute;
-    width: 100%;
-  }
+        .pos1 { top: 8%;  left: 8%;  transform: rotate(-15deg); }
+        .pos2 { top: 12%; right: 8%; transform: rotate(20deg); }
+        .pos3 { bottom: 20%; left: 10%; transform: rotate(10deg); }
+        .pos4 { bottom: 15%; right: 10%; transform: rotate(-25deg); }
+        .pos5 { top: 50%; left: 50%; transform: translate(-50%, -50%) scale(3); opacity: 0.08; }
 
-  .item {
-    height: 50px;
-    line-height: 50px;
-    font-size: 24px;
-  }
+        h1 {
+            font-family: 'Pacifico', cursive;
+            color: #ff1493;
+            margin: 0 0 20px 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.05);
+        }
 
-  #highlight {
-    position: absolute;
-    top: 50px;
-    width: 100%;
-    height: 50px;
-    border-top: 3px solid red;
-    border-bottom: 3px solid red;
-    pointer-events: none;
-    background: rgba(255, 0, 0, 0.05);
-  }
+        /* The Spin Wheel */
+        #container {
+            width: 85%;
+            max-width: 400px;  
+            height: 150px; 
+            overflow: hidden;
+            border: 8px solid #ff69b4;
+            border-radius: 25px;
+            background: white;
+            position: relative;
+            box-shadow: 0 15px 35px rgba(255, 105, 180, 0.3);
+        }
 
-  button {
-    padding: 15px 40px;
-    font-size: 22px;
-    background: #ff69b4;
-    color: white;
-    border: none;
-    border-radius: 50px;
-    cursor: pointer;
-    margin-top: 30px;
-  }
+        #list {
+            position: absolute;
+            width: 100%;
+            transition: transform 0.1s linear;
+        }
 
-  #result {
-    margin-top: 25px;
-    min-height: 30px; 
-    font-size: 24px;
-    font-weight: bold;
-    color: #ff1493;
-  }
-</style>
+        .item {
+            height: 50px;
+            line-height: 50px;
+            font-size: 22px;
+            font-weight: 500;
+        }
+
+        #highlight {
+            position: absolute;
+            top: 50px; /* Centered in the 150px height box */
+            width: 100%;
+            height: 50px;
+            border-top: 3px solid #ff1493;
+            border-bottom: 3px solid #ff1493;
+            pointer-events: none;
+            background: rgba(255, 20, 147, 0.05);
+        }
+
+        button {
+            padding: 18px 45px;
+            font-size: 22px;
+            font-family: 'Quicksand', sans-serif;
+            font-weight: bold;
+            background: #ff69b4;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            margin-top: 30px;
+            box-shadow: 0 5px 15px rgba(255, 105, 180, 0.4);
+            transition: transform 0.1s;
+        }
+
+        button:active { transform: scale(0.95); }
+
+        #result {
+            margin-top: 25px;
+            min-height: 40px; 
+            font-size: 26px;
+            font-weight: bold;
+            color: #ff1493;
+        }
+
+        /* WhatsApp Button */
+        #whatsapp-btn {
+            display: none;
+            margin-top: 20px;
+            background-color: #25D366;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 18px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    </style>
 </head>
 
 <body>
 
+<div class="bg-layer">
+    <img src="mammanienie1.jpg" class="bg-img pos1">
+    <img src="mammanienie2.jpg" class="bg-img pos2">
+    <img src="mammanienie3.jpg" class="bg-img pos3">
+    <img src="mammanienie4.jpg" class="bg-img pos4">
+    <img src="mammanienie5.jpg" class="bg-img pos5">
+</div>
+
 <h1>Pick a Surprise 💝</h1>
 
 <div id="container">
-  <div id="list"></div>
-  <div id="highlight"></div>
+    <div id="list"></div>
+    <div id="highlight"></div>
 </div>
 
 <button onclick="start()">Pick 🎰</button>
 
 <div id="result"></div>
+<a href="#" id="whatsapp-btn">Redeem Prize 📱</a>
 
 <script>
 const options = [
-  "Do the dishes 🍽️", "Big hug 🤗", "Clean the kitchen 🧼", 
-  "Make tea ☕", "Sweet note 💌", "Help with chores 🧹", 
-  "Movie night 🎬", "Number of kisses 💖", "Belly Button 🤮", "Squeeze 🧽"
+    "Do the dishes 🍽️", "Big hug 🤗", "Clean the kitchen 🧼", 
+    "Make tea ☕", "Sweet note 💌", "Help with chores 🧹", 
+    "Movie night 🎬", "Number of kisses 💖", "Belly Button 🤮", "Squeeze 🧽"
 ];
 
 const list = document.getElementById("list");
 const itemHeight = 50; 
+const fullList = [...options, ...options, ...options, ...options];
 
-const fullList = [...options, ...options, ...options];
 fullList.forEach(text => {
-  const div = document.createElement("div");
-  div.className = "item";
-  div.innerText = text;
-  list.appendChild(div);
+    const div = document.createElement("div");
+    div.className = "item";
+    div.innerText = text;
+    list.appendChild(div);
 });
 
 let position = 0;
-let speed = 20;
+let speed = 0;
 let spinning = false;
 
-// --- AUDIO SETUP ---
-const tickSound = new Audio("https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3");
+// Audio Setup
+const tickSoundURL = "https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3";
 const customMusic = new Audio("audioformamma.mp3");
 const winSound = new Audio("https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3");
+const tickPool = Array.from({ length: 5 }, () => new Audio(tickSoundURL));
 
-customMusic.preload = 'auto';
-customMusic.loop = true; 
-customMusic.volume = 0.8; 
+customMusic.loop = true;
+customMusic.volume = 0.3;
+
+function playTick() {
+    const t = tickPool.find(audio => audio.paused) || tickPool[0];
+    t.currentTime = 0;
+    t.volume = 0.6;
+    t.play().catch(() => {});
+    if (navigator.vibrate) navigator.vibrate(10); // Haptic feedback
+}
 
 function start() {
-  if (spinning) return;
-  spinning = true;
-  document.getElementById("result").innerText = ""; 
+    if (spinning) return;
+    spinning = true;
+    
+    document.getElementById("result").innerText = "";
+    document.getElementById("whatsapp-btn").style.display = "none";
+    
+    customMusic.play().catch(() => {});
 
-  customMusic.play().catch(() => {});
+    speed = 25 + Math.random() * 10;
+    let duration = 2500 + Math.random() * 1500; 
+    let startTime = Date.now();
 
-  speed = 25;
-  let duration = 2000 + Math.random() * 2000; 
-  let startTime = Date.now();
+    function animate() {
+        position += speed;
+        const totalHeight = options.length * itemHeight;
 
-  function animate() {
-    position += speed;
-    const totalHeight = options.length * itemHeight;
+        if (position >= totalHeight) position %= totalHeight;
 
-    if (position >= totalHeight) {
-      position = position % totalHeight;
+        list.style.transform = `translateY(-${position}px)`;
+
+        // Tick on every item pass
+        if (Math.floor(position / itemHeight) !== Math.floor((position - speed) / itemHeight)) {
+            playTick();
+        }
+
+        let elapsed = Date.now() - startTime;
+        if (elapsed > duration) speed *= 0.96;
+
+        if (speed > 0.5) {
+            requestAnimationFrame(animate);
+        } else {
+            finish();
+        }
     }
-
-    list.style.transform = `translateY(-${position}px)`;
-
-    if (Math.random() < 0.25) {
-      const t = tickSound.cloneNode();
-      t.volume = 1.0; 
-      t.play().catch(() => {}); 
-    }
-
-    let elapsed = Date.now() - startTime;
-    if (elapsed > duration) {
-      speed *= 0.95;
-    }
-
-    if (speed > 0.5) {
-      requestAnimationFrame(animate);
-    } else {
-      finish();
-    }
-  }
-
-  animate();
+    animate();
 }
 
 function finish() {
-  position = Math.round(position / itemHeight) * itemHeight;
-  list.style.transform = `translateY(-${position}px)`;
+    // Math to center the item in the middle box (offset by 1 itemHeight)
+    position = Math.round(position / itemHeight) * itemHeight;
+    list.style.transform = `translateY(-${position}px)`;
 
-  const redBoxOffset = itemHeight; 
-  const winningPosition = position + redBoxOffset;
- 
-  const index = Math.round(winningPosition / itemHeight) % options.length;
+    const index = (Math.round((position + itemHeight) / itemHeight)) % options.length;
+    const choice = options[index];
 
-  const choice = options[index];
-  document.getElementById("result").innerText = "You got: " + choice;
-  
-  winSound.currentTime = 0;
-  winSound.play().catch(() => {});
-  
-  spinning = false;
+    document.getElementById("result").innerText = "You got: " + choice;
+    
+    // Celebrations
+    winSound.play().catch(() => {});
+    confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+
+    // WhatsApp Integration
+    const waBtn = document.getElementById("whatsapp-btn");
+    waBtn.style.display = "inline-block";
+    waBtn.onclick = (e) => {
+        e.preventDefault();
+        const myNumber = "YOUR_PHONE_NUMBER_HERE"; // <-- CHANGE THIS
+        const msg = encodeURIComponent(`Hi! I just used my Lucky Spin and won: ${choice}! 💖`);
+        window.open(`https://wa.me/${myNumber}?text=${msg}`, '_blank');
+    };
+
+    spinning = false;
 }
-</script>
-<script>
-  if ('serviceWorker' in navigator) {
+
+// Service Worker Registration
+if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('sw.js');
-  }
+}
 </script>
 </body>
 </html>
