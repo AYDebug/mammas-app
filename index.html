@@ -145,24 +145,12 @@
 <body>
 
 <div class="bg-layer">
-    <img src="mammanienie1.jpg" class="bg-img pos1">
-    <img src="mammanienie2.jpg" class="bg-img pos2">
-    <img src="mammanienie3.jpg" class="bg-img pos3">
-    <img src="mammanienie4.jpg" class="bg-img pos4">
-    <img src="mammanienie5.jpg" class="bg-img pos5">
+    <img src="mammanienie1.jpg" class="bg-img pos1" onerror="this.style.display='none'">
+    <img src="mammanienie2.jpg" class="bg-img pos2" onerror="this.style.display='none'">
+    <img src="mammanienie3.jpg" class="bg-img pos3" onerror="this.style.display='none'">
+    <img src="mammanienie4.jpg" class="bg-img pos4" onerror="this.style.display='none'">
+    <img src="mammanienie5.jpg" class="bg-img pos5" onerror="this.style.display='none'">
 </div>
-
-<h1>Pick a Surprise 💝</h1>
-
-<div id="container">
-    <div id="list"></div>
-    <div id="highlight"></div>
-</div>
-
-<button onclick="start()">Pick 🎰</button>
-
-<div id="result"></div>
-<a href="#" id="whatsapp-btn">Redeem Prize 📱</a>
 
 <script>
 const options = [
@@ -173,7 +161,9 @@ const options = [
 
 const list = document.getElementById("list");
 const itemHeight = 50; 
-const fullList = [...options, ...options, ...options, ...options];
+
+// We use a larger multiplier for the list to ensure we never "run out" of items during a fast spin
+const fullList = [...options, ...options, ...options, ...options, ...options, ...options];
 
 fullList.forEach(text => {
     const div = document.createElement("div");
@@ -183,14 +173,13 @@ fullList.forEach(text => {
 });
 
 let position = 0;
-let speed = 0;
 let spinning = false;
 
 // Audio Setup
 const tickSoundURL = "https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3";
 const customMusic = new Audio("audioformamma.mp3");
 const winSound = new Audio("https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3");
-const tickPool = Array.from({ length: 5 }, () => new Audio(tickSoundURL));
+const tickPool = Array.from({ length: 8 }, () => new Audio(tickSoundURL));
 
 customMusic.loop = true;
 customMusic.volume = 0.3;
@@ -198,9 +187,9 @@ customMusic.volume = 0.3;
 function playTick() {
     const t = tickPool.find(audio => audio.paused) || tickPool[0];
     t.currentTime = 0;
-    t.volume = 0.6;
+    t.volume = 0.5;
     t.play().catch(() => {});
-    if (navigator.vibrate) navigator.vibrate(10); // Haptic feedback
+    if (navigator.vibrate) navigator.vibrate(10);
 }
 
 function start() {
@@ -212,66 +201,67 @@ function start() {
     
     customMusic.play().catch(() => {});
 
-    speed = 25 + Math.random() * 10;
-    let duration = 2500 + Math.random() * 1500; 
-    let startTime = Date.now();
+    // --- SMOOTH SPIN LOGIC ---
+    let speed = 30 + Math.random() * 15; // Higher initial burst
+    const friction = 0.985; // How fast it slows down (0.99 = slow stop, 0.95 = fast stop)
+    const minSpeed = 0.2;
 
-    function animate() {
+    function step() {
         position += speed;
-        const totalHeight = options.length * itemHeight;
+        speed *= friction; // Gradual deceleration
 
+        const totalHeight = options.length * itemHeight;
         if (position >= totalHeight) position %= totalHeight;
 
-        list.style.transform = `translateY(-${position}px)`;
+        // Visual update using translate3d for Hardware Acceleration (Smoother!)
+        list.style.transform = `translate3d(0, -${position}px, 0)`;
 
-        // Tick on every item pass
+        // Tick sound logic
         if (Math.floor(position / itemHeight) !== Math.floor((position - speed) / itemHeight)) {
             playTick();
         }
 
-        let elapsed = Date.now() - startTime;
-        if (elapsed > duration) speed *= 0.96;
-
-        if (speed > 0.5) {
-            requestAnimationFrame(animate);
+        if (speed > minSpeed) {
+            requestAnimationFrame(step);
         } else {
             finish();
         }
     }
-    animate();
+    
+    requestAnimationFrame(step);
 }
 
 function finish() {
-    // Math to center the item in the middle box (offset by 1 itemHeight)
+    // Snap to center
     position = Math.round(position / itemHeight) * itemHeight;
-    list.style.transform = `translateY(-${position}px)`;
+    list.style.transform = `translate3d(0, -${position}px, 0)`;
 
+    // Calculate index based on the center highlight box
     const index = (Math.round((position + itemHeight) / itemHeight)) % options.length;
     const choice = options[index];
 
     document.getElementById("result").innerText = "You got: " + choice;
     
-    // Celebrations
+    winSound.currentTime = 0;
     winSound.play().catch(() => {});
     confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
 
-    // WhatsApp Integration
     const waBtn = document.getElementById("whatsapp-btn");
     waBtn.style.display = "inline-block";
     waBtn.onclick = (e) => {
         e.preventDefault();
-        const myNumber = "YOUR_PHONE_NUMBER_HERE"; // <-- CHANGE THIS
-        const msg = encodeURIComponent(`Hi! I just used my Lucky Spin and won: ${choice}! 💖`);
+        const myNumber = "YOUR_NUMBER"; // Replace with your number!
+        const msg = encodeURIComponent(`Hi! I won: ${choice}! 💖`);
         window.open(`https://wa.me/${myNumber}?text=${msg}`, '_blank');
     };
 
     spinning = false;
 }
-
-// Service Worker Registration
-if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('sw.js');
-}
+    if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js')
+      .then(() => console.log("Service Worker Registered"))
+      .catch(err => console.log("Service Worker Failed", err));
+  }
 </script>
 </body>
 </html>
